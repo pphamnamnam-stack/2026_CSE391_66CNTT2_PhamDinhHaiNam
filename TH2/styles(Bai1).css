@@ -1,0 +1,56 @@
+*{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body{ 
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(255, 255, 255);
+}
+/* Tìm đến thẻ h1 nằm bên trong form có class .contact-form */
+.contact-form h1 {
+  font-size: 20px;         /* Chỉnh kích thước chữ */
+  font-weight: bold;       /* Giữ độ đậm hoặc dùng 'normal' nếu muốn mảnh hơn */
+  margin-bottom: 10px;     /* Tạo khoảng cách với các ô nhập liệu bên dưới */
+  color: #333;             /* Đổi màu chữ cho chuyên nghiệp hơn nếu thích */
+}
+.contact-form{
+  width: 80%;
+  padding: 30px;
+  border: 1px solid  black;
+  margin: auto;
+  gap: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px ;
+}
+.row input, 
+.row textarea {
+  flex:1;
+  padding: 10px;
+  border: 1px solid rgb(132, 128, 128);
+}
+.row{
+  display: flex;
+  gap: 20px;
+}
+textarea{
+  min-height: 200px;
+}
+button{
+  background-color: rgb(121, 190, 239);
+  border-radius: 5px;
+  border: 1px solid rgb(101, 207, 237);
+  padding: 12px 20px;
+  color: white;
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+span{
+  color: gray;
+}
