@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Form đặt hàng</title>
+
+<style>
+
+.error{
+color:red;
+font-size:13px;
+}
+
+.counter{
+font-size:12px;
+color:gray;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Đặt hàng</h2>
+
+<form id="orderForm">
+
+<label>Sản phẩm</label><br>
+<select id="product">
+<option value="">-- Chọn sản phẩm --</option>
+<option value="ao">Áo</option>
+<option value="quan">Quần</option>
+<option value="giay">Giày</option>
+</select>
+<span class="error" id="productError"></span>
+
+<br><br>
+
+<label>Số lượng</label><br>
+<input type="number" id="quantity">
+<span class="error" id="quantityError"></span>
+
+<br><br>
+
+<label>Ngày giao hàng</label><br>
+<input type="date" id="delivery">
+<span class="error" id="deliveryError"></span>
+
+<br><br>
+
+<label>Địa chỉ giao</label><br>
+<input type="text" id="address">
+<span class="error" id="addressError"></span>
+
+<br><br>
+
+<label>Ghi chú</label><br>
+<textarea id="note"></textarea>
+<div class="counter" id="noteCount">0/200</div>
+<span class="error" id="noteError"></span>
+
+<br><br>
+
+<label>Thanh toán</label><br>
+
+<input type="radio" name="payment" value="COD"> COD
+<input type="radio" name="payment" value="Bank"> Chuyển khoản
+<input type="radio" name="payment" value="Wallet"> Ví điện tử
+
+<span class="error" id="paymentError"></span>
+
+<br><br>
+
+<h3>Tổng tiền: <span id="total">0</span> VNĐ</h3>
+
+<button type="submit">Đặt hàng</button>
+
+</form>
+
+<div id="confirmBox" style="display:none;border:1px solid #ccc;padding:10px;margin-top:20px"></div>
+
+<script>
+
+const prices={
+ao:150000,
+quan:200000,
+giay:500000
+}
+
+function showError(id,msg){
+document.getElementById(id+"Error").textContent=msg
+}
+
+function clearError(id){
+document.getElementById(id+"Error").textContent=""
+}
+
+function validateProduct(){
+
+let v=document.getElementById("product").value
+
+if(v===""){
+showError("product","Chọn sản phẩm")
+return false
+}
+
+clearError("product")
+return true
+}
+
+function validateQuantity(){
+
+let v=parseInt(document.getElementById("quantity").value)
+
+if(isNaN(v)||v<1||v>99){
+showError("quantity","1-99")
+return false
+}
+
+clearError("quantity")
+return true
+}
+
+function validateDate(){
+
+let date=new Date(document.getElementById("delivery").value)
+let today=new Date()
+
+let max=new Date()
+max.setDate(today.getDate()+30)
+
+if(date<today||date>max){
+showError("delivery","Ngày phải trong 30 ngày")
+return false
+}
+
+clearError("delivery")
+return true
+}
+
+function validateAddress(){
+
+let v=document.getElementById("address").value.trim()
+
+if(v.length<10){
+showError("address","≥10 ký tự")
+return false
+}
+
+clearError("address")
+return true
+}
+
+function validateNote(){
+
+let v=document.getElementById("note").value
+
+if(v.length>200){
+showError("note","Tối đa 200 ký tự")
+return false
+}
+
+clearError("note")
+return true
+}
+
+function validatePayment(){
+
+let radios=document.getElementsByName("payment")
+
+for(let r of radios){
+if(r.checked){
+clearError("payment")
+return true
+}
+}
+
+showError("payment","Chọn phương thức")
+return false
+}
+
+function calcTotal(){
+
+let product=document.getElementById("product").value
+let qty=parseInt(document.getElementById("quantity").value)
+
+if(prices[product]&&qty){
+
+let total=prices[product]*qty
+
+document.getElementById("total").textContent=
+Number(total).toLocaleString("vi-VN")
+
+}
+
+}
+
+document.getElementById("product").addEventListener("change",calcTotal)
+document.getElementById("quantity").addEventListener("input",calcTotal)
+
+document.getElementById("note").addEventListener("input",function(){
+
+let len=this.value.length
+
+document.getElementById("noteCount").textContent=len+"/200"
+
+if(len>200){
+document.getElementById("noteCount").style.color="red"
+}else{
+document.getElementById("noteCount").style.color="gray"
+}
+
+})
+
+document.getElementById("orderForm").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let valid=
+validateProduct()&
+validateQuantity()&
+validateDate()&
+validateAddress()&
+validateNote()&
+validatePayment()
+
+if(valid){
+
+let product=document.getElementById("product").value
+let qty=document.getElementById("quantity").value
+let total=document.getElementById("total").textContent
+let date=document.getElementById("delivery").value
+
+document.getElementById("confirmBox").style.display="block"
+
+document.getElementById("confirmBox").innerHTML=
+
+`
+<h3>Xác nhận đặt hàng</h3>
+Sản phẩm: ${product}<br>
+Số lượng: ${qty}<br>
+Tổng tiền: ${total} VNĐ<br>
+Ngày giao: ${date}<br><br>
+
+<button onclick="confirmOrder()">Xác nhận</button>
+<button onclick="cancelOrder()">Hủy</button>
+`
+
+}
+
+})
+
+function confirmOrder(){
+
+document.body.innerHTML="<h2>Đặt hàng thành công 🎉</h2>"
+
+}
+
+function cancelOrder(){
+
+document.getElementById("confirmBox").style.display="none"
+
+}
+
+</script>
+
+</body>
+</html>
