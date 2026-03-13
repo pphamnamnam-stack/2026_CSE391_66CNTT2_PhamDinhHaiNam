@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Form đăng ký</title>
+
+<style>
+
+body{
+font-family: Arial;
+}
+
+form{
+width:350px;
+}
+
+input{
+width:100%;
+padding:6px;
+margin-top:5px;
+}
+
+.error{
+color:red;
+font-size:13px;
+display:block;
+}
+
+.success{
+color:green;
+font-size:20px;
+}
+
+.invalid{
+border:1px solid red;
+}
+
+.valid{
+border:1px solid green;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Đăng ký tài khoản</h2>
+
+<form id="registerForm">
+
+<label>Họ và tên</label>
+<input type="text" id="fullname">
+<span class="error" id="fullnameError"></span>
+
+<label>Email</label>
+<input type="text" id="email">
+<span class="error" id="emailError"></span>
+
+<label>Số điện thoại</label>
+<input type="text" id="phone">
+<span class="error" id="phoneError"></span>
+
+<label>Mật khẩu</label>
+<input type="password" id="password">
+<span class="error" id="passwordError"></span>
+
+<label>Xác nhận mật khẩu</label>
+<input type="password" id="confirm">
+<span class="error" id="confirmError"></span>
+
+<br><br>
+
+<label>Giới tính</label><br>
+
+<input type="radio" name="gender" value="Nam"> Nam
+<input type="radio" name="gender" value="Nữ"> Nữ
+<input type="radio" name="gender" value="Khác"> Khác
+
+<span class="error" id="genderError"></span>
+
+<br><br>
+
+<label>
+<input type="checkbox" id="terms"> Tôi đồng ý điều khoản
+</label>
+
+<span class="error" id="termsError"></span>
+
+<br><br>
+
+<button type="submit">Đăng ký</button>
+
+</form>
+
+<div id="successMessage"></div>
+
+<script>
+
+const nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^0[0-9]{9}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+function showError(id,message){
+
+let input = document.getElementById(id);
+let error = document.getElementById(id+"Error");
+
+error.textContent = message;
+
+input.classList.add("invalid");
+input.classList.remove("valid");
+
+}
+
+function clearError(id){
+
+let input = document.getElementById(id);
+let error = document.getElementById(id+"Error");
+
+error.textContent = "";
+
+input.classList.remove("invalid");
+input.classList.add("valid");
+
+}
+
+
+function validateFullname(){
+
+let value = document.getElementById("fullname").value.trim();
+
+if(value === ""){
+showError("fullname","Không được để trống");
+return false;
+}
+
+if(value.length < 3){
+showError("fullname","Phải ≥ 3 ký tự");
+return false;
+}
+
+if(!nameRegex.test(value)){
+showError("fullname","Chỉ chứa chữ cái");
+return false;
+}
+
+clearError("fullname");
+return true;
+
+}
+
+
+function validateEmail(){
+
+let value = document.getElementById("email").value.trim();
+
+if(value === ""){
+showError("email","Không được để trống");
+return false;
+}
+
+if(!emailRegex.test(value)){
+showError("email","Email không hợp lệ");
+return false;
+}
+
+clearError("email");
+return true;
+
+}
+
+
+function validatePhone(){
+
+let value = document.getElementById("phone").value.trim();
+
+if(value === ""){
+showError("phone","Không được để trống");
+return false;
+}
+
+if(!phoneRegex.test(value)){
+showError("phone","SĐT phải 10 số và bắt đầu bằng 0");
+return false;
+}
+
+clearError("phone");
+return true;
+
+}
+
+
+function validatePassword(){
+
+let value = document.getElementById("password").value;
+
+if(value === ""){
+showError("password","Không được để trống");
+return false;
+}
+
+if(!passwordRegex.test(value)){
+showError("password","≥8 ký tự, có hoa, thường, số");
+return false;
+}
+
+clearError("password");
+return true;
+
+}
+
+
+function validateConfirm(){
+
+let pass = document.getElementById("password").value;
+let confirm = document.getElementById("confirm").value;
+
+if(confirm !== pass){
+showError("confirm","Mật khẩu không khớp");
+return false;
+}
+
+clearError("confirm");
+return true;
+
+}
+
+
+function validateGender(){
+
+let genders = document.getElementsByName("gender");
+
+for(let g of genders){
+if(g.checked){
+document.getElementById("genderError").textContent="";
+return true;
+}
+}
+
+document.getElementById("genderError").textContent="Vui lòng chọn giới tính";
+return false;
+
+}
+
+
+function validateTerms(){
+
+let terms = document.getElementById("terms");
+
+if(!terms.checked){
+document.getElementById("termsError").textContent="Phải đồng ý điều khoản";
+return false;
+}
+
+document.getElementById("termsError").textContent="";
+return true;
+
+}
+
+
+document.getElementById("fullname").addEventListener("blur",validateFullname);
+document.getElementById("email").addEventListener("blur",validateEmail);
+document.getElementById("phone").addEventListener("blur",validatePhone);
+document.getElementById("password").addEventListener("blur",validatePassword);
+document.getElementById("confirm").addEventListener("blur",validateConfirm);
+
+
+document.querySelectorAll("input").forEach(input=>{
+input.addEventListener("input",function(){
+
+let error = document.getElementById(this.id+"Error");
+if(error){
+error.textContent="";
+this.classList.remove("invalid");
+}
+
+});
+});
+
+
+document.getElementById("registerForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let valid =
+validateFullname() &
+validateEmail() &
+validatePhone() &
+validatePassword() &
+validateConfirm() &
+validateGender() &
+validateTerms();
+
+if(valid){
+
+let name = document.getElementById("fullname").value;
+
+this.style.display="none";
+
+document.getElementById("successMessage").innerHTML =
+`<div class="success">Đăng ký thành công! 🎉<br>Chào ${name}</div>`;
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
